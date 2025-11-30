@@ -10,6 +10,42 @@ local kamikaze_bots = {}
 -- Track last enemy contact time for each bot
 local bot_last_enemy_contact = {}
 
+-- Function to get current damage upgrade level
+local function get_damage_level(force)
+  for level = 10, 1, -1 do
+    if force.technologies["laser-construction-bots-damage-" .. level] and 
+       force.technologies["laser-construction-bots-damage-" .. level].researched then
+      return level
+    end
+  end
+  return 0
+end
+
+-- Function to get current cooldown upgrade level
+local function get_cooldown_level(force)
+  for level = 10, 1, -1 do
+    if force.technologies["laser-construction-bots-cooldown-" .. level] and 
+       force.technologies["laser-construction-bots-cooldown-" .. level].researched then
+      return level
+    end
+  end
+  return 0
+end
+
+-- Function to calculate laser damage based on upgrade level
+local function get_laser_damage(force)
+  local level = get_damage_level(force)
+  -- Base: 10, Max: 50 (increases by 4 per level)
+  return 10 + (level * 4)
+end
+
+-- Function to calculate cooldown based on upgrade level
+local function get_laser_cooldown(force)
+  local level = get_cooldown_level(force)
+  -- Base: 300 ticks (5s), Max: 0 ticks (reduces by 30 per level)
+  return math.max(0, 300 - (level * 30))
+end
+
 -- Normal laser construction bots
 script.on_nth_tick(10, function(event)
   local current_tick = event.tick
@@ -36,6 +72,10 @@ script.on_nth_tick(10, function(event)
 
         local state = bot_fire_state[bot_id]
         
+        -- Get current research bonuses
+        local laser_damage = get_laser_damage(bot.force)
+        local laser_cooldown = get_laser_cooldown(bot.force)
+        
         -- Normal laser firing logic
         local enemies = surface.find_entities_filtered{
           position = bot.position,
@@ -60,8 +100,8 @@ script.on_nth_tick(10, function(event)
 
           if not currently_in_roboport and current_tick >= state.cooldown_until then
             if state.fire_time >= 120 then
-              -- After firing for 2 seconds, cooldown for 5 seconds with random offset
-              state.cooldown_until = current_tick + 300 + math.random(-30, 30)
+              -- After firing for 2 seconds, cooldown based on research with random offset
+              state.cooldown_until = current_tick + laser_cooldown + math.random(-30, 30)
               state.fire_time = 0
             else
               surface.create_entity{
@@ -72,7 +112,8 @@ script.on_nth_tick(10, function(event)
                 duration = 10
               }
 
-              target.damage(10, bot.force, "laser", bot)
+              -- Apply researched damage
+              target.damage(laser_damage, bot.force, "laser", bot)
               bot.energy = bot.energy - 1000
               state.fire_time = state.fire_time + 10
             end
@@ -230,10 +271,9 @@ script.on_nth_tick(1, function(event)
       kamikaze.destroy()
     else
       -- Move kamikaze toward target using teleport (EVERY TICK for smooth movement)
-      -- Scale speed with worker robot speed research bonus
-      local speed_bonus = kamikaze.force.worker_robots_speed_modifier or 0
-      local base_speed = 0.05
-      local move_speed = base_speed * (1 + speed_bonus)  -- Scales with research!
+      -- FIXED SPEED - matches default construction robot speed, no research scaling
+      local base_speed = 0.05  -- Fixed at default construction robot speed
+      local move_speed = base_speed
       
       local move_x = (dx / dist) * move_speed
       local move_y = (dy / dist) * move_speed
