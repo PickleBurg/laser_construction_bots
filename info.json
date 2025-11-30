@@ -5,5 +5,6 @@
     "author": "PickleBurg",
     "factorio_version": "2.0",
     "description": "Adds a research that gives construction robots laser weapons.",
-    "dependencies": [ "base >= 2.0" ]
+
+    "dependencies": ["base >= 2.0","?space-age", "?quality" ]
 }

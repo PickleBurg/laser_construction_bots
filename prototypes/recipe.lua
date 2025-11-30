@@ -4,10 +4,12 @@ data:extend({
     name = "laser-construction-robot",
     enabled = false,
     ingredients = {
-      {"construction-robot", 1},
-      {"battery", 2},
-      {"electronic-circuit", 2}
+      {type = "item", name = "construction-robot", amount = 1},
+      {type = "item", name = "laser-turret", amount = 1},
+      {type = "item", name = "battery", amount = 2}
     },
-    result = "laser-construction-robot"
+    results = {
+      {type = "item", name = "laser-construction-robot", amount = 1}
+    }
   }
 })
