@@ -1,0 +1,9 @@
+{
+    "name": "laser_construction_bots",
+    "version": "0.1.0",
+    "title": "Laser Construction Bots",
+    "author": "PickleBurg",
+    "factorio_version": "2.0",
+    "description": "Adds a research that gives construction robots laser weapons.",
+    "dependencies": [ "base >= 2.0" ]
+}
