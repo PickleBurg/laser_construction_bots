@@ -8,7 +8,7 @@ data:extend({
     name = "laser-construction-bots",
     icon = "__base__/graphics/technology/construction-robotics.png",
     icon_size = 256,
-    prerequisites = {"construction-robotics", "laser", "production-science-pack"},
+    prerequisites = {"construction-robotics", "logistic-robotics", "laser", "laser-turret", "production-science-pack"},
     effects = {
       {
         type = "unlock-recipe",
@@ -27,7 +27,7 @@ data:extend({
       time = 45
     },
     localised_name = {"", "Laser Construction Bots"},
-    localised_description = {"", "Construction robots equipped with laser weapons. They automatically attack nearby enemies while building."}
+    localised_description = {"", "Construction robots equipped with laser weapons. They automatically attack nearby enemies while building. Damage scales with Energy Weapons Damage research."}
   }
 })
 
@@ -369,3 +369,40 @@ for level = 8, 10 do
     }
   })
 end
+
+-- ============================================================================
+-- LASER LOGISTIC BOTS
+-- ============================================================================
+
+-- Base laser logistic bots technology
+data:extend({
+  {
+    type = "technology",
+    name = "laser-logistic-bots",
+    icon = "__base__/graphics/technology/logistic-robotics.png",
+    icon_size = 256,
+    prerequisites = {"logistic-robotics", "laser", "laser-turret", "production-science-pack"},
+    effects = {
+      {
+        type = "unlock-recipe",
+        recipe = "laser-logistic-robot"
+      }
+    },
+    unit = {
+      count = 500,
+      ingredients = {
+        {"automation-science-pack", 1},
+        {"logistic-science-pack", 1},
+        {"military-science-pack", 1},
+        {"chemical-science-pack", 1},
+        {"production-science-pack", 1}
+      },
+      time = 45
+    },
+    localised_name = {"", "Laser Logistic Bots"},
+    localised_description = {"", "Logistic robots equipped with laser weapons. They automatically attack nearby enemies while transporting items. Damage scales with Energy Weapons Damage research."}
+  }
+})
+
+-- Note: Laser logistic bots share the same cooldown upgrades as construction bots
+-- Damage scales with vanilla Energy Weapons Damage research (infinite research)
